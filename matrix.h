@@ -144,7 +144,7 @@ public:
 };
 template <typename T>
 Vector<T>::Vector(int n, T val) :Matrix(n, 1, val) {
-}
+};
 
 
 #endif
