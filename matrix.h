@@ -17,12 +17,12 @@ public:
 	int m;
 	Matrix(int,int,T);
 	void print(void)const;
+	float determinant(const Matrix&);
+	Matrix transposition(const Matrix&);
 
 	Matrix& operator=(const Matrix&)&;
-
 	const std::vector<T>& operator[](int)const&;
 	std::vector<T>& operator[](int)&;
-
 	template <typename U>
 	friend Matrix<U> operator+(const Matrix<U>&,const Matrix<U>&);
 	template <typename U>
@@ -39,7 +39,7 @@ Matrix<T>::Matrix(int n, int m,T val) :n(n), m(m) {
 		this->mat[i].resize(m);
 		std::fill(this->mat[i].begin(),this->mat[i].end(),val);
 	}
-};
+}
 
 template <typename T>
 void Matrix<T>::print(void) const{
@@ -51,6 +51,20 @@ void Matrix<T>::print(void) const{
 	}
 	std::cout << std::endl;
 }
+template <typename T>
+float Matrix<T>::determinant(const Matrix<T>& a) {
+	if (a.n != a.m) return nan;
+
+}
+
+template <typename T>
+Matrix<T> Matrix<T>::transposition(const Matrix<T>& a) {
+	Matrix<T>res(a.m, a.n, 0);
+
+}
+
+
+
 template <typename T>
 Matrix<T>& Matrix<T>::operator=(const Matrix<T>& a) &{
 	if (this == &a) return *this;
@@ -121,4 +135,16 @@ Matrix<T> operator*(const Matrix<T>& a, const Matrix<T>& b) {
 	}
 	return res;
 }
+
+template <typename T>
+class Vector :public Matrix<T> {
+private:
+public:
+	Vector(int,T);
+};
+template <typename T>
+Vector<T>::Vector(int n, T val) :Matrix(n, 1, val) {
+}
+
+
 #endif

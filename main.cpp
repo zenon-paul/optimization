@@ -1,8 +1,7 @@
 #include"matrix.h"
 #include<iostream>
 
-template <typename T>
-Matrix<T> operator+(const Matrix<T>& a, const Matrix<T>& b);
+
 int main() {
 	Matrix<int>n(2, 3,2);
 	Matrix<int>m(3, 2, 1);
