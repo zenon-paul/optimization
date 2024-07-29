@@ -21,22 +21,25 @@ namespace basicmatrix {
 	template<typename T>
 	class Matrix {
 	private:
-	public:
 		std::vector<std::vector<T> > mat;
 		uint16_t n;
 		uint16_t m;
+	public:
 
 		Matrix(uint16_t, uint16_t, T);
+		Matrix(uint16_t n);
 		Matrix(const Matrix&);//コピーコンストラクタ
 		Matrix(Matrix&& a)noexcept;//ムーブコンストラクタ
 		Matrix();//引数なしコンストラクタ
 		Matrix(std::initializer_list<std::initializer_list<T>>);//初期化リスト可能
-		~Matrix();
-		std::tuple<int, int> size()const;
+		virtual ~Matrix();
+		virtual std::tuple<uint16_t, uint16_t> size()const;
 		void print(void)const;
-		void resize(uint16_t, uint16_t, T);
-		std::tuple<int, int> size();
-		Matrix& transposition();
+		virtual void resize(uint16_t, uint16_t, T);
+		void row_resize(uint16_t,T);
+		void column_rezise(uint16_t,T);
+		virtual Matrix& transposition();
+		virtual Matrix transposition_const()const;
 		Matrix& row_calc(uint16_t, uint16_t, std::function<std::tuple<T, T>(T, T)>);
 		Matrix& column_calc(uint16_t, uint16_t, std::function<std::tuple<T, T>(T, T)>);
 		Matrix& row_swap(uint16_t, uint16_t);
@@ -64,12 +67,11 @@ namespace basicmatrix {
 	};
 
 	template <typename T>
-	Matrix<T>::Matrix(uint16_t n, uint16_t m, T val) :n(n), m(m) {
-		this->mat.resize(n);
-		for (int i = 0; i < n; i++) {
-			this->mat[i].resize(m);
-			std::fill<std::vector<T>::iterator,T>(this->mat[i].begin(), this->mat[i].end(), val);
-		}
+	Matrix<T>::Matrix(uint16_t n, uint16_t m, T val) 
+		:n(n), 
+		m(m),
+		mat(std::vector<std::vector<T>>(n,std::vector<T>(m,val))) {
+		
 	}
 	/*template<typename T>
 	Matrix<T>::Matrix(int n, int m) :n(n* m), m(n* m) {
@@ -91,16 +93,16 @@ namespace basicmatrix {
 				}
 			}
 		}
-	}
+	}*/
 	template <typename T>
-	Matrix<T>::Matrix(int n) :n(n), m(n) {
+	Matrix<T>::Matrix(uint16_t n) :n(n), m(n) {
 		this->mat.resize(this->n);
 		for (int i = 0; i < this->n; i++) {
 			this->mat[i].resize(this->m);
 			std::fill(this->mat[i].begin(), this->mat[i].end(), 0);
 			this->mat[i][i] = 1;
 		}
-	}*/
+	}
 
 
 	template <typename T>
@@ -144,7 +146,7 @@ namespace basicmatrix {
 	Matrix<T>::~Matrix() {
 	}
 	template <typename T>
-	std::tuple<int, int> Matrix<T>::size()const {
+	std::tuple<uint16_t, uint16_t> Matrix<T>::size()const {
 		return std::tuple<int, int>{this->n, this->m};
 	}
 	template <typename T>
@@ -167,8 +169,16 @@ namespace basicmatrix {
 		this->m = new_m;
 	}
 	template <typename T>
-	std::tuple<int, int> Matrix<T>::size() {
-		return std::tuple<int,int>{this->n,this->m};
+	void Matrix<T>::row_resize(uint16_t new_m,T val) {
+		for (auto& row:this->mat) {
+			row.resize(new_m, val);
+		}
+		this->m = new_m;
+	}
+	template <typename T>
+	void Matrix<T>::column_rezise(uint16_t new_n,T val) {
+		this->mat.resize(new_n,std::vector<T>(this->m,val));
+		this->n = new_n;
 	}
 	template <typename T>
 	Matrix<T>& Matrix<T>::transposition() {
@@ -182,6 +192,16 @@ namespace basicmatrix {
 		this->mat = new_mat;
 		std::swap(this->n,this->m);
 		return *this;
+	}
+	template <typename T>
+	Matrix<T> Matrix<T>::transposition_const()const {
+		Matrix<T> new_matrix(this->m, this->n, 0);
+		for (int i = 0; i < this->n; i++) {
+			for (int j = 0; j < this->m; j++) {
+				new_matrix[j][i] = this->mat[i][j];
+			}
+		}
+		return new_matrix;
 	}
 	template <typename T>
 	Matrix<T>& Matrix<T>::row_calc(uint16_t l1, uint16_t l2, std::function<std::tuple<T, T>(T, T)> process) {
@@ -362,15 +382,11 @@ namespace basicmatrix {
 		return res;
 	}
 
-	template <typename T>
-	class Vector :public virtual Matrix<T> {
-	private:
-	public:
-		Vector(int, T);
-	};
-	template <typename T>
-	Vector<T>::Vector(int n, T val) :Matrix<T>(n, 1, val) {
-	};
 
 }
 #endif
+//https://www.kennzo.net/numerical-inverse-matrix
+//https://note.nkmk.me/python-numpy-matrix/#nplinalginv
+//https://manabitimes.jp/math/2746
+//https://risalc.info/src/adjoint-matrix-properties.html
+//https://qiita.com/akinami/items/3bee4adfe5c1eada9e4b

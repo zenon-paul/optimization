@@ -117,19 +117,14 @@ int main() {
 	auto [nnum, mnum] = h.size();
 	std::cout << nnum << " " << mnum << std::endl;
 	h.print();*/
-	mmt::Matrix<float> a(1,2,5);
-	mmt::Matrix<float> f = mmt::Matrix<float>(1, 2, 3);
-	mmt::Matrix<float> fff = a + f;
-	(a + f).print();
-	a = f;
-	func(a);
-	mmt::vector_<int> v(2, 3);
-	mmt::vector_<int> b(5, 7);
-	std::copy(b.begin(),b.end(),std::back_inserter(v));
-	std::fill<std::vector<int>::iterator, int>(v.begin(),v.end(),5);
-	v.swap(b);
-	for (const auto num : v) {
-		std::cout << num << " ";
-	}
-	std::cout<<std::endl;
+	mmt::Matrix<float> f(2,5,9.0f);
+	f.resize(1,10,4.0f);
+	f.column_rezise(3,0.0f);
+	f.row_resize(4,6.0f);
+	f.print();
+	auto [n, m] = f.size();
+	std::cout << n << m << std::endl;
+	f.transposition_const().print();
+	auto [n1, m1] = f.size();
+	std::cout << n1 << m1 << std::endl;
 }
